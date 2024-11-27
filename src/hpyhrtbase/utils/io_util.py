@@ -57,10 +57,15 @@ class IOUtil:
 
     @staticmethod
     def download_url(
-        url: str, retry_count: int = 3, timeout: float = 10, rethrow: bool = True
+        url: str,
+        retry_count: int = 3,
+        timeout: float = 10,
+        need_throttle: bool = False,
+        rethrow: bool = True,
     ) -> requests.Response:
         for idx in range(retry_count):
-            hpyhrt_context.get_global_context().throttle.wait(url)
+            if need_throttle:
+                hpyhrt_context.get_global_context().throttle.wait(url)
             try:
                 mod_logger.debug(f"Try {idx} Begin: to download from: {url}")
                 rsp = requests.get(url, timeout=timeout)

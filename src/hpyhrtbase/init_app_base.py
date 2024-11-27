@@ -5,7 +5,7 @@ from collections.abc import Callable
 from typing import Any
 
 from hpyhrtbase import config, hpyhrt_context, log
-from hpyhrtbase.utils import IOUtil
+from hpyhrtbase.utils import IOUtil, Throttle
 
 __all__ = ["init_app_base"]
 
@@ -54,6 +54,9 @@ def init_app_base(
         init_app_default_configs()
 
     init_base_default_configs(config_inst)
+
+    global_context = hpyhrt_context.get_global_context()
+    global_context.throttle = Throttle()
 
     # Logistics #
     if hasattr(config_inst, "project_dir"):

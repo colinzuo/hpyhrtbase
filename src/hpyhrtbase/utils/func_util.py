@@ -1,3 +1,4 @@
+import logging
 import time
 import traceback
 from collections.abc import Callable
@@ -6,7 +7,7 @@ from functools import wraps
 from logging import Logger
 from typing import Any, ParamSpec, TypeVar
 
-from hpyhrtbase import hpyhrt_context
+mod_logger = logging.getLogger(__name__)
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -48,12 +49,12 @@ class FuncUtil:
                     try:
                         return f(*args, **kwargs)
                     except ExceptionToCheck as e:
-                        hpyhrt_context.get_robot_logger().info(traceback.format_exc())
+                        mod_logger.info(traceback.format_exc())
                         msg = f"{str(e)}, Retrying in {mdelay:.2f} seconds..."
                         if logger:
                             logger.warning(msg)
                         else:
-                            hpyhrt_context.get_robot_logger().warning(msg)
+                            mod_logger.warning(msg)
                         time.sleep(mdelay)
                         mtries -= 1
                         mdelay *= backoff

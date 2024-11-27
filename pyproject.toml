@@ -12,6 +12,7 @@ classifiers = [
     "Programming Language :: Python :: 3"
 ]
 dependencies = [
+    "pydantic",
     "pyhocon",
     "requests"
 ]
