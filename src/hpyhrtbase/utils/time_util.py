@@ -1,7 +1,5 @@
 import time
-from datetime import datetime, timezone
-
-from hpyhrtbase import hpyhrt_context
+from datetime import datetime
 
 
 class TimeUtil:

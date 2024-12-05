@@ -108,7 +108,7 @@ log_config_default: dict[str, Any] = {
         },
         "normal": {
             "class": "logging.Formatter",
-            "format": "%(asctime)s.%(msecs)03d  %(levelname)-8s [%(name)s] %(module)s:%(funcName)s:%(lineno)d: %(message)s",
+            "format": "%(asctime)s.%(msecs)03d  %(levelname)-8s [%(name)s] %(funcName)s:%(lineno)d: %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S",
         },
         "verbose": {
@@ -127,7 +127,7 @@ log_config_default: dict[str, Any] = {
         "file_handler": {
             "class": "logging.handlers.RotatingFileHandler",
             "level": "DEBUG",
-            "formatter": "brief",
+            "formatter": "normal",
             "filename": "app.log",
             "maxBytes": 10485760,
             "backupCount": 20,
