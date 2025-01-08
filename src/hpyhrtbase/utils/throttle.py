@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 
 default_delay_maps: dict[str, float] = {
     'dfcfw.com': 1,
+    'eastmoney.com': 1.2,
     'sina.com.cn': 3,
     'sohu.com': 2,
     'tushare.pro': 0.3,
@@ -21,6 +22,9 @@ class Throttle:
         else:
             self.delay_maps = default_delay_maps.copy()
         self.domains_last_accessed: dict[str, datetime] = {}
+
+    def update_delay_maps(self, delay_maps_update: dict[str, float]) -> None:
+        self.delay_maps.update(delay_maps_update)
 
     def calc_wait(self, url: str) -> tuple[str, float]:
         parsed = urlparse(url)

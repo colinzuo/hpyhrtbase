@@ -1,8 +1,21 @@
 import time
-from datetime import datetime
+from collections.abc import Generator
+from contextlib import contextmanager
+from datetime import date, datetime
+from types import SimpleNamespace
 
 
 class TimeUtil:
+    @staticmethod
+    def convert_date_int_to_date_obj(date_int: int) -> date:
+        date_obj = date(date_int//10000, (date_int//100)%100, date_int%100)
+        return date_obj
+
+    @staticmethod
+    def convert_date_obj_to_date_int(date_obj: date) -> int:
+        date_int = date_obj.year * 10000 + date_obj.month * 100 + date_obj.day
+        return date_int
+
     @staticmethod
     def datetime_fromisoformat(datetime_str: datetime | str) -> datetime | None:
         try:
@@ -30,6 +43,15 @@ class TimeUtil:
     @staticmethod
     def get_current_time_monotonic() -> float:
         return time.monotonic()
+
+    @contextmanager
+    @staticmethod
+    def timeit() -> Generator[SimpleNamespace]:
+        start_time = time.monotonic()
+        ns = SimpleNamespace()
+        yield ns
+        duration = time.monotonic() - start_time
+        ns.duration = duration
 
 
 if __name__ == "__main__":

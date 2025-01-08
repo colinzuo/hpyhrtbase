@@ -121,7 +121,7 @@ log_config_default: dict[str, Any] = {
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "brief",
+            "formatter": "normal",
             "stream": "ext://sys.stdout",
         },
         "file_handler": {
@@ -136,7 +136,7 @@ log_config_default: dict[str, Any] = {
         "error_file_handler": {
             "class": "logging.handlers.RotatingFileHandler",
             "level": "ERROR",
-            "formatter": "verbose",
+            "formatter": "normal",
             "filename": "app_error.log",
             "maxBytes": 10485760,
             "backupCount": 20,
