@@ -5,7 +5,9 @@ from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from logging import Logger
-from typing import Any, ParamSpec, TypeVar
+from typing import Any, ParamSpec, TypeVar, cast
+
+from hpyhrtbase.model import ErrorInfoException, ErrorResponse
 
 mod_logger = logging.getLogger(__name__)
 
@@ -14,6 +16,17 @@ T = TypeVar("T")
 
 
 class FuncUtil:
+    @staticmethod
+    def deco_handle_error_info_exception(f: Callable[P, T]) -> Callable[P, T]:
+        @wraps(f)
+        def f_handle_error_info_exception(*args: P.args, **kwargs: P.kwargs) -> T:
+            try:
+                return f(*args, **kwargs)
+            except ErrorInfoException as e:
+                return cast(T, ErrorResponse(error=e.error_info))
+
+        return f_handle_error_info_exception
+
     @staticmethod
     def retry(
         ExceptionToCheck: type[Exception],
