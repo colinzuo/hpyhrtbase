@@ -27,7 +27,7 @@ def init_app_base(
     init_app_default_configs: Callable[[config.Params], Any] | None = None,
     check_dir_names: list[str] | None = None,
 ) -> None:
-    """解析config, 配置app特有的缺省配置, 创建缺省目录, 配置log"""
+    """Parse config, apply app-specific defaults, create directories, setup logging."""
     global _init_app_base_done
     log_prefix = "init_app_base:"
 
@@ -84,7 +84,7 @@ def init_app_base(
 
 
 def reparse_config(update_context: bool = False) -> config.Params:
-    """重新解析config文件, 返回新的config inst"""
+    """Reparse the config file and return a new config instance."""
     if not _init_app_base_done or _config_file is None:
         raise Exception("init_app_base not called yet")
 

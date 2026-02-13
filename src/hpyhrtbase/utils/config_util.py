@@ -6,10 +6,10 @@ from hpyhrtbase import hpyhrt_context
 class ConfigUtil:
     @staticmethod
     def decode_invisible_config(orig_value: str, must_exist: bool = True) -> Any:
-        """
-        有些配置项含有敏感信息，为了打印log时候不打印它们，
-        我们加了一层重定向，如果配置项有指定前缀，则真实
-        配置存在重定向对应key下
+        """Decode a config value that may be redirected to hide sensitive information.
+
+        If the value starts with the invisible_config_prefix, the actual value
+        is stored under the redirected key in config.
         """
         config_inst = hpyhrt_context.get_config_inst()
         invisible_config_prefix = config_inst.invisible_config_prefix
@@ -32,10 +32,10 @@ class ConfigUtil:
 
     @staticmethod
     def override_config(config: Any, orig_value: str, key_prefix: str) -> tuple[str | None, Any]:
-        """
-        有些配置项含有敏感信息，为了打印log时候不打印它们，
-        我们加了一层重定向，如果配置项有指定前缀，则真实
-        配置存在重定向对应key下
+        """Override a config value that may be redirected to hide sensitive information.
+
+        If the value starts with key_prefix, the actual value is stored under
+        the redirected key in config.
         """
         if orig_value.startswith(key_prefix):
             to_value = None
