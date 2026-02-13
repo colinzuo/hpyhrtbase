@@ -1,5 +1,4 @@
 import logging
-import logging.config
 import os
 from collections.abc import Callable
 from typing import Any
@@ -7,19 +6,25 @@ from typing import Any
 from hpyhrtbase import config, hpyhrt_context, log
 from hpyhrtbase.utils import IOUtil, Throttle
 
-__all__ = ["init_app_base"]
+__all__ = ["init_app_base", "reparse_config"]
 
 _init_app_base_done = False
+_config_file: str | None = None
+_overrides: str | None = None
+_init_app_default_configs: Callable[[config.Params], Any] | None = None
 
 
 def reset() -> None:
-    global _init_app_base_done
+    global _init_app_base_done, _config_file, _overrides, _init_app_default_configs
     _init_app_base_done = False
+    _config_file = None
+    _overrides = None
+    _init_app_default_configs = None
 
 
 def init_app_base(
     config_path: str,
-    init_app_default_configs: Callable[[], Any] | None = None,
+    init_app_default_configs: Callable[[config.Params], Any] | None = None,
     check_dir_names: list[str] | None = None,
 ) -> None:
     """解析config, 配置app特有的缺省配置, 创建缺省目录, 配置log"""
@@ -37,6 +42,8 @@ def init_app_base(
     print(log_msg)
     logging.info(log_msg)
 
+    global _config_file, _overrides, _init_app_default_configs
+
     config_file = IOUtil.find_abs_path(config_path)
 
     if not config_file:
@@ -46,12 +53,17 @@ def init_app_base(
 
     overrides = f"root_dir={root_dir}"
     overrides = overrides.replace("\\", "\\\\")
+
+    _config_file = config_file
+    _overrides = overrides
+    _init_app_default_configs = init_app_default_configs
+
     config_inst = config.params_from_file(config_file, overrides)
 
     hpyhrt_context.set_config_inst(config_inst)
 
     if init_app_default_configs:
-        init_app_default_configs()
+        init_app_default_configs(config_inst)
 
     init_base_default_configs(config_inst)
 
@@ -69,6 +81,26 @@ def init_app_base(
     log.setup_logging(config_inst)
 
     logging.info(f"{log_prefix} Done")
+
+
+def reparse_config(update_context: bool = False) -> config.Params:
+    """重新解析config文件, 返回新的config inst"""
+    if not _init_app_base_done or _config_file is None:
+        raise Exception("init_app_base not called yet")
+
+    logging.info(f"reparse_config: reparsing from {_config_file}")
+
+    config_inst = config.params_from_file(_config_file, _overrides)
+
+    if _init_app_default_configs:
+        _init_app_default_configs(config_inst)
+
+    init_base_default_configs(config_inst)
+
+    if update_context:
+        hpyhrt_context.set_config_inst(config_inst)
+
+    return config_inst
 
 
 def init_base_default_configs(config_inst: config.Params) -> None:
